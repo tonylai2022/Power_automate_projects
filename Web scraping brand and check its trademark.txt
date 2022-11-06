@@ -1,0 +1,60 @@
+Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: $'''C:\\...\\storefront link.xlsx''' Visible: False ReadOnly: False Instance=> ExcelInstance2
+Excel.GetFirstFreeColumnRow Instance: ExcelInstance2 FirstFreeColumn=> FirstFreeColumn2 FirstFreeRow=> FirstFreeRow2
+Excel.ReadFromExcel.ReadCells Instance: ExcelInstance2 StartColumn: 1 StartRow: 1 EndColumn: FirstFreeColumn2 - 1 EndRow: FirstFreeRow2 - 1 ReadAsText: False FirstLineIsHeader: True RangeValue=> ExcelData2
+SET NewVar2 TO 2
+LOOP FOREACH CurrentItem2 IN ExcelData2
+    WebAutomation.LaunchChrome.LaunchChrome Url: CurrentItem2 WindowState: WebAutomation.BrowserWindowState.Normal ClearCache: False ClearCookies: False WaitForPageToLoadTimeout: 60 Timeout: 60 BrowserInstance=> Browser2
+    BLOCK no_brand
+ON BLOCK ERROR
+
+END
+        WebAutomation.ExtractData.ExtractList BrowserInstance: Browser2 Control: $'''html > body > div:eq(0) > div:eq(1) > div:eq(0) > div:eq(1) > div > div:eq(2) > span > div:eq(0) > div > div > div > ul > li''' ExtractionParameters: {[$'''span > a > span''', $'''Own Text''', $''''''] } PostProcessData: False TimeoutInSeconds: 60 ExtractedData=> DataFromWebPage2
+        Excel.WriteToExcel.WriteCell Instance: ExcelInstance2 Value: DataFromWebPage2 Column: 1 Row: NewVar2
+        Variables.IncreaseVariable Value: NewVar2 IncrementValue: DataFromWebPage2.RowsCount + 1
+        WebAutomation.CloseWebBrowser BrowserInstance: Browser2
+    END
+END
+Excel.CloseExcel.CloseAndSaveAs Instance: ExcelInstance2 DocumentFormat: Excel.ExcelFormat.FromExtension DocumentPath: $'''C:\\Users\\sp990\\Desktop\\tess.xlsx'''
+Excel.LaunchExcel.LaunchAndOpenUnderExistingProcess Path: $'''C:\\Users\\sp990\\Desktop\\tess.xlsx''' Visible: False ReadOnly: False Instance=> ExcelInstance
+Excel.GetFirstFreeColumnRow Instance: ExcelInstance FirstFreeColumn=> FirstFreeColumn FirstFreeRow=> FirstFreeRow
+Excel.ReadFromExcel.ReadCells Instance: ExcelInstance StartColumn: 1 StartRow: 1 EndColumn: FirstFreeColumn - 1 EndRow: FirstFreeRow - 1 ReadAsText: False FirstLineIsHeader: True RangeValue=> ExcelData
+SET NewVar TO 2
+LOOP FOREACH CurrentItem IN ExcelData
+    WebAutomation.LaunchChrome.LaunchChrome Url: $'''https://tmsearch.uspto.gov/bin/gate.exe?f=login&p_lang=english&p_d=trmk''' WindowState: WebAutomation.BrowserWindowState.Normal ClearCache: False ClearCookies: False WaitForPageToLoadTimeout: 60 Timeout: 60 BrowserInstance=> Browser
+    @@source: 'Recorder'
+    WebAutomation.Click.Click BrowserInstance: Browser Control: appmask['Web Page \'h ... h79y9z.1.1\'']['Anchor'] MouseClick: False
+    WebAutomation.PopulateTextField.PopulateTextField BrowserInstance: Browser Control: appmask['Web Page \'h ... mym3l3.1.1\'']['Input text \'p_s_PARA2\''] Text: CurrentItem['Brand'] Mode: WebAutomation.PopulateTextMode.Replace EmulateTyping: True UnfocusAfterPopulate: False WaitForPageToLoadTimeout: 60
+    MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Return}''' DelayBetweenKeystrokes: 10 SendTextAsHardwareKeys: False
+    BLOCK RecordMayExist
+ON BLOCK ERROR
+
+END
+        WebAutomation.ExtractData.ExtractSingleValue BrowserInstance: Browser ExtractionParameters: {[$'''html > body > h1:eq(0)''', $'''Own Text''', $''''''] } TimeoutInSeconds: 60 ExtractedData=> DataFromWebPage
+        Excel.WriteToExcel.WriteCell Instance: ExcelInstance Value: DataFromWebPage Column: 2 Row: NewVar
+    END
+    Variables.IncreaseVariable Value: NewVar IncrementValue: 1
+    WebAutomation.CloseWebBrowser BrowserInstance: Browser
+END
+Excel.CloseExcel.CloseAndSave Instance: ExcelInstance
+
+# [ControlRepository][PowerAutomateDesktop]
+
+{
+  "ControlRepositorySymbols": [
+    {
+      "Name": "appmask",
+      "ImportMetadata": {
+        "DisplayName": "Computer",
+        "ConnectionString": "",
+        "Type": "Local",
+        "DesktopType": "local"
+      },m3l3.1.1'\",\r\n      \"SelectorCount\": 1,\r\n      \"Selectors\": [\r\n        {\r\n          \"CustomSelector\": null,\r\n          \"Elements\": [\r\n            {\r\n              \"Attributes\": [],\r\n              \"CustomValue\": \"domcontainer\",\r\n              \"Ignore\": false,\r\n              \"Name\": \"Web Page 'https://tmsearch.uspto.gov/bin/gate.exe?f=searchss&state=4804:mym3l3.1.1'\",\r\n              \"Tag\": \"domcontainer\"\r\n            }\r\n          ],\r\n          \"Ignore\": false,\r\n          \"IsCustom\": false,\r\n          \"IsWindowsInstance\": false,\r\n          \"Order\": 0,\r\n          \"Name\": \"Default Selector\"\r\n        }\r\n      ],\r\n      \"Tag\": \"domcontainer\",\r\n      \"ScreenshotPath\": \"controlRepo-screenshots\\\\\\\\9bf82f9d-9476-4767-b641-7ef5440fd074.png\"\r\n    }\r\n  ],\r\n  \"Version\": 1\r\n}"
+    }
+  ],
+  "ImageRepositorySymbol": {
+    "Name": "imgrepo",
+    "ImportMetadata": {},
+    "Repository": "{\r\n  \"Folders\": [],\r\n  \"Images\": [],\r\n  \"Version\": 1\r\n}"
+  },
+  "ConnectionReferences": []
+}
